@@ -1,20 +1,34 @@
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework import status,generics,mixins
+from rest_framework import status,generics,mixins, viewsets
 from rest_framework.decorators import api_view, APIView
 from .models import *
 from .serializers import *
 from django.shortcuts import get_object_or_404
 
-@api_view(http_method_names=["GET", "POST"])
-def homepage(request:Request):
-    if request.method == "POST":
-        data = request.data
-        response = {"message":"Hello World", "data":data}
-        return Response(data=response, status=status.HTTP_201_CREATED)
+
+
+# Model Viewset
+class PostModelViewset(viewsets.ModelViewSet):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+
     
-    response = {"message":"Hello World"}
-    return Response(data=response, status=status.HTTP_200_OK)
+# Viewset
+class PostViewset(viewsets.ViewSet):
+    def list(self, request:Request, *args, **kwargs):
+        queryset = Post.objects.all()
+        serializer = PostSerializer(instance=queryset, many=True)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+    
+    def retrieve(self, request:Request,pk=None):
+        post=get_object_or_404(Post,pk=pk)
+        serializer = PostSerializer(instance=post)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+    
+    
+
+# Generic APIView and mixins 
 
 class PostListCreateView(generics.GenericAPIView, mixins.ListModelMixin, mixins.CreateModelMixin):
     serializer_class = PostSerializer
@@ -31,7 +45,7 @@ class PostListCreateView(generics.GenericAPIView, mixins.ListModelMixin, mixins.
 class PostRetriveUpdateDeleteView(generics.GenericAPIView, mixins.UpdateModelMixin,mixins.RetrieveModelMixin,mixins.DestroyModelMixin):
     serializer_class = PostSerializer
     queryset = Post.objects.all()
-    
+
     def get(self,request:Request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
 
