@@ -10,5 +10,6 @@ router.register(r"", PostViewset, basename="posts")
 urlpatterns = [
     path('admin/', admin.site.urls),
     # path("posts/",include("posts.urls")),
+    path("auth/", include("accounts.urls")),
     path("posts/",include(router.urls)),
 ]

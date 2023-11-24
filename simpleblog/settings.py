@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     
     # third-party-apps
     'rest_framework',
+    'rest_framework.authtoken'
 ]
 
 AUTH_USER_MODEL="accounts.user"
@@ -57,6 +58,17 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'simpleblog.urls'
+
+REST_FRAMEWORK = {
+    "NON_FIELD_ERRORS_KEY": "errors",
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.TokenAuthentication"
+    ),
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated")
+}
+
+
 
 TEMPLATES = [
     {
