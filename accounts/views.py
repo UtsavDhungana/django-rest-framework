@@ -1,11 +1,14 @@
 from django.shortcuts import render
+from django.contrib.auth import authenticate
 from .serializers import *
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.views import APIView
-from django.contrib.auth import authenticate
+from rest_framework.decorators import permission_classes
+from .tokens import *
 
+@permission_classes([])
 class SignUpView(generics.GenericAPIView,):
     serializer_class = SignUpSerializer
 
@@ -22,7 +25,8 @@ class SignUpView(generics.GenericAPIView,):
             }
             return Response(data=data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
+@permission_classes([]) 
 class LoginView(APIView):
 
     def post(self, request:Request):
@@ -30,12 +34,14 @@ class LoginView(APIView):
         password = request.data.get("password")
 
         user = authenticate(email=email, password=password)
+        
         serializer = SignUpSerializer(instance=user)
         if user is not None:
+            tokens = create_jwt_pair_for_user(user=user)
             response = {
                 "message": "Login Successful",
                 "user": serializer.data,
-                "token": user.auth_token.key
+                "token": tokens
             }
             return Response(data=response, status=status.HTTP_200_OK)
         return Response(data={"message": "Invalid email or password"}, status=status.HTTP_400_BAD_REQUEST)
