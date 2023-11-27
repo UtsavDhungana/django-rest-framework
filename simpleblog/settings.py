@@ -40,9 +40,9 @@ INSTALLED_APPS = [
     'posts',
     'accounts',
     
-    # third-party-apps
     'rest_framework',
     'rest_framework.authtoken'
+    # third-party-apps
 ]
 
 AUTH_USER_MODEL="accounts.user"
@@ -65,7 +65,7 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.TokenAuthentication"
     ),
-    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated")
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
 }
 
 
